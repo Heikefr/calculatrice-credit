@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Crédit Immo">
+<meta name="theme-color" content="#f4f3ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c1c1b" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>Crédit Immo</title>
+<style>
+:root{
+  --bg:#f4f3ef;--card:#ffffff;--soft:#ecebe5;--line:rgba(0,0,0,.09);
+  --tx:#1f1f1d;--tx2:#6b6a64;--tx3:#9a9890;
+  --acc:#0f6e56;--acc-bg:#e1f5ee;
+  --cap:#1d9e75;--int:#d85a30;--ass:#7f77dd;
+  --good:#3b6d11;--good-bg:#eaf3de;--bad:#a32d2d;
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#1c1c1b;--card:#282826;--soft:#323230;--line:rgba(255,255,255,.1);
+  --tx:#f1efe8;--tx2:#b4b2a9;--tx3:#888780;
+  --acc:#5dcaa5;--acc-bg:#0b3a2f;--good:#97c459;--good-bg:#25380e;--bad:#f09595;
+}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;font-size:16px}
+body{padding:env(safe-area-inset-top) 0 calc(72px + env(safe-area-inset-bottom))}
+main{max-width:560px;margin:0 auto;padding:12px 14px}
+h1{font-size:24px;font-weight:600;margin:6px 2px 12px}
+h2{font-size:17px;font-weight:600;margin:18px 2px 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.hero{text-align:center;padding:16px 14px}
+.hero .lbl{font-size:13px;color:var(--tx2)}
+.hero .big{font-size:36px;font-weight:600;letter-spacing:-.5px;margin:2px 0}
+.hero .sub{font-size:13px;color:var(--tx2)}
+.field{padding:10px 0;border-bottom:1px solid var(--line)}
+.field:last-child{border-bottom:0}
+.frow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.frow label{font-size:15px;color:var(--tx2)}
+.num{display:flex;align-items:center;gap:4px;background:var(--soft);border-radius:10px;padding:0 10px;height:38px}
+.num input{width:110px;border:0;background:transparent;color:var(--tx);font-size:17px;font-weight:600;text-align:right;outline:none;font-family:inherit}
+.num span{font-size:14px;color:var(--tx2)}
+input[type=range]{width:100%;margin:10px 0 2px;accent-color:var(--acc);height:28px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{background:var(--soft);border-radius:12px;padding:10px 12px}
+.tile p{margin:0;font-size:12px;color:var(--tx2)}
+.tile div{font-size:18px;font-weight:600;margin-top:2px}
+.bar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:14px 0 6px;background:var(--soft)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--tx2)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:0}
+.note{font-size:12px;color:var(--tx3);margin-top:8px;line-height:1.5}
+button{font-family:inherit;font-size:16px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--tx);padding:12px 14px;cursor:pointer}
+button.main{background:var(--acc);color:#fff;border-color:transparent;font-weight:600;width:100%}
+@media (prefers-color-scheme:dark){button.main{color:#04342c}}
+button.small{font-size:14px;padding:8px 12px;border-radius:10px}
+button.danger{color:var(--bad)}
+.row-btn{display:flex;gap:10px;flex-wrap:wrap}
+.row-btn button{flex:1}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 0 calc(6px + env(safe-area-inset-bottom));z-index:5}
+nav button{border:0;background:transparent;padding:4px 6px;font-size:11px;color:var(--tx3);display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+nav button svg{width:24px;height:24px}
+nav button.on{color:var(--acc)}
+.view{display:none}.view.on{display:block}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font-weight:600;font-size:12px;color:var(--tx2)}
+td:first-child,th:first-child{text-align:left}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -14px;padding:0 14px}
+.cmp td:first-child,.cmp th:first-child{position:sticky;left:0;background:var(--card);color:var(--tx2);font-weight:400;z-index:1}
+.cmp th{color:var(--tx);font-size:14px}
+.best{color:var(--good);font-weight:700;background:var(--good-bg);border-radius:6px}
+.pname{display:block;color:var(--acc);font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+.pdate{display:block;font-size:11px;color:var(--tx3);font-weight:400}
+.empty{text-align:center;color:var(--tx2);padding:28px 10px;line-height:1.6}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:10}
+.sheet-bg.on{display:flex}
+.sheet{background:var(--card);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+.sheet input[type=text]{width:100%;font-size:17px;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--tx);margin:10px 0 14px;font-family:inherit}
+.set{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.set:last-child{border-bottom:0}
+.set label{font-size:15px}
+.set .hint{display:block;font-size:12px;color:var(--tx3)}
+.set input[type=text]{width:130px;font-size:16px;padding:8px 10px;border-radius:10px;border:0;background:var(--soft);color:var(--tx);text-align:right;font-family:inherit}
+select{font-size:15px;padding:8px;border-radius:10px;border:0;background:var(--soft);color:var(--tx);font-family:inherit}
+canvas{width:100%;height:200px;display:block}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:20}
+.toast.on{opacity:1}
+#print{display:none}
+@media print{
+  @page{margin:14mm}
+  html,body{padding:0;background:#fff;color:#000}
+  main,nav,.sheet-bg,.toast{display:none!important}
+  #print{display:block;font-size:11pt;color:#000}
+  #print h1{font-size:18pt;margin:0 0 4pt}
+  #print h2{font-size:13pt;margin:16pt 0 6pt}
+  #print table{font-size:10pt;margin-bottom:8pt}
+  #print th,#print td{border-bottom:1px solid #ccc;padding:4pt 5pt;color:#000}
+  #print .best{background:#eaf3de;color:#27500a}
+  #print .pdet{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<main>
+  <!-- CALCUL -->
+  <section class="view on" id="v-calc">
+    <h1>Calcul</h1>
+    <div class="card hero">
+      <div class="lbl" id="h-lbl">Mensualité assurance comprise</div>
+      <div class="big" id="h-men">–</div>
+      <div class="sub" id="h-sub"></div>
+    </div>
+    <div class="card" id="fields"></div>
+    <div class="card">
+      <div class="grid">
+        <div class="tile"><p>À emprunter</p><div id="r-emp"></div></div>
+        <div class="tile"><p>Coût total du crédit</p><div id="r-cout"></div></div>
+        <div class="tile"><p>Intérêts</p><div id="r-int"></div></div>
+        <div class="tile"><p>Assurance totale</p><div id="r-ass"></div></div>
+        <div class="tile"><p>Frais de notaire</p><div id="r-not"></div></div>
+        <div class="tile"><p>Total remboursé</p><div id="r-tot"></div></div>
+      </div>
+      <div class="bar"><div id="b-cap" style="background:var(--cap)"></div><div id="b-int" style="background:var(--int)"></div><div id="b-ass" style="background:var(--ass)"></div></div>
+      <div class="legend"><span><i class="dot" style="background:var(--cap)"></i>Capital</span><span><i class="dot" style="background:var(--int)"></i>Intérêts</span><span><i class="dot" style="background:var(--ass)"></i>Assurance</span></div>
+      <div class="note" id="r-note"></div>
+    </div>
+    <button class="main" id="btn-save">Enregistrer cette proposition</button>
+  </section>
+
+  <!-- AMORTISSEMENT -->
+  <section class="view" id="v-amort">
+    <h1>Amortissement</h1>
+    <div class="card">
+      <canvas id="chart"></canvas>
+      <div class="legend" style="margin-top:8px"><span><i class="dot" style="background:var(--cap)"></i>Capital</span><span><i class="dot" style="background:var(--int)"></i>Intérêts</span><span><i class="dot" style="background:var(--ass)"></i>Assurance</span></div>
+    </div>
+    <div class="card">
+      <div class="scroll"><table id="t-amort"></table></div>
+    </div>
+  </section>
+
+  <!-- COMPARER -->
+  <section class="view" id="v-cmp">
+    <h1>Comparer</h1>
+    <div id="cmp-box"></div>
+  </section>
+
+  <!-- REGLAGES -->
+  <section class="view" id="v-set">
+    <h1>Réglages</h1>
+    <h2>Emprunteurs</h2>
+    <div class="card">
+      <div class="set"><label>Prénom emprunteur 1</label><input type="text" id="s-n1"></div>
+      <div class="set"><label>Prénom emprunteur 2</label><input type="text" id="s-n2"></div>
+      <div class="set"><label id="l-part">Part du bien<span class="hint">en % pour l'emprunteur 1</span></label><input type="text" inputmode="decimal" id="s-part"></div>
+    </div>
+    <h2>Frais de notaire</h2>
+    <div class="card">
+      <div class="set"><label id="l-not1">Taux emprunteur 1</label><input type="text" inputmode="decimal" id="s-not1"></div>
+      <div class="set"><label id="l-not2">Taux emprunteur 2</label><input type="text" inputmode="decimal" id="s-not2"></div>
+      <div class="note">Chaque taux s'applique à la part du bien de l'emprunteur.</div>
+    </div>
+    <h2>Assurance</h2>
+    <div class="card">
+      <div class="set"><label>Calcul de l'assurance</label>
+        <select id="s-amode"><option value="initial">Sur le capital initial</option><option value="crd">Sur le capital restant dû</option></select></div>
+      <div class="note">Le taux saisi dans Calcul est le taux annuel total pour le foyer.</div>
+    </div>
+    <h2>Sauvegarde</h2>
+    <div class="card">
+      <div class="row-btn"><button class="small" id="btn-exp">Exporter</button><button class="small" id="btn-imp">Importer</button></div>
+      <input type="file" id="f-imp" accept="application/json,.json" style="display:none">
+      <div class="note">Les données restent uniquement sur cet appareil. Exporte une sauvegarde de temps en temps (fichier .json).</div>
+    </div>
+    <button class="small danger" id="btn-reset" style="width:100%">Tout effacer</button>
+    <div class="note" style="text-align:center">Crédit Immo · v1.0 · fonctionne hors ligne</div>
+  </section>
+</main>
+
+<div id="print"></div>
+
+<nav>
+  <button data-v="calc" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15v3M8 18h4"/></svg>Calcul</button>
+  <button data-v="amort"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Amortissement</button>
+  <button data-v="cmp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M17 4v16M3 8l4-4 4 4M13 16l4 4 4-4"/></svg>Comparer</button>
+  <button data-v="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Réglages</button>
+</nav>
+
+<div class="sheet-bg" id="sheet">
+  <div class="sheet">
+    <div style="font-size:18px;font-weight:600">Enregistrer la proposition</div>
+    <input type="text" id="p-name" placeholder="Crédit Agricole, agence de Reims" maxlength="40" autocomplete="off">
+    <div class="row-btn"><button id="p-cancel">Annuler</button><button class="main" id="p-ok" style="flex:1">Enregistrer</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const LS = 'creditImmo.v1';
+const DEF_IN = {prix:250000,a1:20000,a2:15000,taux:3.30,duree:25,assu:0.30,frais:2500};
+const DEF_SET = {n1:'Maxime',n2:'Épouse',part1:50,not1:8,not2:8.5,amode:'initial'};
+let IN = {...DEF_IN}, SET = {...DEF_SET}, PROPS = [];
+
+/* ---------- stockage ---------- */
+function load(){
+  try{
+    const d = JSON.parse(localStorage.getItem(LS) || '{}');
+    IN = {...DEF_IN, ...(d.in||{})};
+    SET = {...DEF_SET, ...(d.set||{})};
+    PROPS = Array.isArray(d.props) ? d.props : [];
+  }catch(e){}
+}
+function save(){
+  try{ localStorage.setItem(LS, JSON.stringify({in:IN,set:SET,props:PROPS})); }catch(e){}
+}
+
+/* ---------- formats ---------- */
+const nf0 = new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0});
+const nf2 = new Intl.NumberFormat('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const eur = n => nf0.format(Math.round(n)) + ' €';
+const pct = n => nf2.format(n) + ' %';
+const parse = s => { const v = parseFloat(String(s).replace(/\s| | /g,'').replace(',','.')); return isNaN(v) ? null : v; };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $ = id => document.getElementById(id);
+
+/* ---------- calcul ---------- */
+function compute(inp, set){
+  const part1 = Math.min(100, Math.max(0, set.part1)) / 100;
+  const notaire = inp.prix * (part1 * set.not1 + (1 - part1) * set.not2) / 100;
+  const C = Math.max(0, inp.prix + notaire + inp.frais - inp.a1 - inp.a2);
+  const n = Math.max(1, Math.round(inp.duree * 12));
+  const r = inp.taux / 1200, ta = inp.assu / 1200;
+  const m = r > 0 ? C * r / (1 - Math.pow(1 + r, -n)) : C / n;
+  let crd = C, I = 0, A = 0, year = null; const rows = [];
+  for(let k = 1; k <= n; k++){
+    const it = crd * r, cap = m - it;
+    const ins = set.amode === 'crd' ? crd * ta : C * ta;
+    crd = Math.max(0, crd - cap); I += it; A += ins;
+    const y = Math.ceil(k / 12);
+    if(!year || year.annee !== y){ year = {annee:y, capital:0, interets:0, assurance:0, crd:0}; rows.push(year); }
+    year.capital += cap; year.interets += it; year.assurance += ins; year.crd = crd;
+  }
+  const ins1 = C * ta;
+  return {notaire, C, n, m, ins1, M1: m + ins1, I, A, frais: inp.frais,
+          cout: I + A + inp.frais, total: C + I + A, rows};
+}
+
+/* ---------- champs de saisie ---------- */
+const FIELDS = [
+  {k:'prix',  l:()=>'Prix du bien',          min:50000, max:800000, step:1000, u:'€',   d:0},
+  {k:'a1',    l:()=>'Apport ' + SET.n1,      min:0,     max:300000, step:500,  u:'€',   d:0},
+  {k:'a2',    l:()=>'Apport ' + SET.n2,      min:0,     max:300000, step:500,  u:'€',   d:0},
+  {k:'taux',  l:()=>'Taux nominal',          min:0.5,   max:7,      step:0.01, u:'%',   d:2},
+  {k:'duree', l:()=>'Durée',                 min:5,     max:30,     step:1,    u:'ans', d:0},
+  {k:'assu',  l:()=>'Assurance (annuel)',    min:0,     max:1,      step:0.01, u:'%',   d:2},
+  {k:'frais', l:()=>'Frais banque',          min:0,     max:10000,  step:50,   u:'€',   d:0},
+];
+const fmtField = (f, v) => f.d ? nf2.format(v) : nf0.format(v);
+
+function buildFields(){
+  $('fields').innerHTML = FIELDS.map(f => `
+    <div class="field">
+      <div class="frow"><label for="t-${f.k}" id="lb-${f.k}">${esc(f.l())}</label>
+        <div class="num"><input id="t-${f.k}" type="text" inputmode="decimal" autocomplete="off"><span>${f.u}</span></div></div>
+      <input type="range" id="s-${f.k}" min="${f.min}" max="${f.max}" step="${f.step}" aria-label="${esc(f.l())}">
+    </div>`).join('');
+  FIELDS.forEach(f => {
+    const t = $('t-'+f.k), s = $('s-'+f.k);
+    s.addEventListener('input', () => { IN[f.k] = +s.value; t.value = fmtField(f, IN[f.k]); refresh(); });
+    t.addEventListener('focus', () => { t.placeholder = fmtField(f, IN[f.k]); t.value = ''; });
+    t.addEventListener('input', () => { const v = parse(t.value); if(v !== null && v >= 0){ IN[f.k] = v; s.value = v; refresh(); } });
+    t.addEventListener('blur', () => { t.placeholder = ''; t.value = fmtField(f, IN[f.k]); });
+    t.addEventListener('keydown', e => { if(e.key === 'Enter') t.blur(); });
+  });
+}
+function syncFields(){
+  FIELDS.forEach(f => {
+    $('s-'+f.k).value = IN[f.k];
+    if(document.activeElement !== $('t-'+f.k)) $('t-'+f.k).value = fmtField(f, IN[f.k]);
+    $('lb-'+f.k).textContent = f.l();
+  });
+}
+
+/* ---------- affichage calcul ---------- */
+let R = null;
+function refresh(){
+  R = compute(IN, SET);
+  $('h-men').textContent = eur(R.M1) + ' /mois';
+  $('h-lbl').textContent = SET.amode === 'crd' ? '1re mensualité assurance comprise' : 'Mensualité assurance comprise';
+  $('h-sub').textContent = `dont ${eur(R.m)} de crédit et ${eur(R.ins1)} d'assurance · ${R.n} mois`;
+  $('r-emp').textContent = eur(R.C);
+  $('r-cout').textContent = eur(R.cout);
+  $('r-int').textContent = eur(R.I);
+  $('r-ass').textContent = eur(R.A);
+  $('r-not').textContent = eur(R.notaire);
+  $('r-tot').textContent = eur(R.total);
+  const t = R.total || 1;
+  $('b-cap').style.width = (R.C/t*100)+'%';
+  $('b-int').style.width = (R.I/t*100)+'%';
+  $('b-ass').style.width = (R.A/t*100)+'%';
+  const ap = IN.a1 + IN.a2;
+  const share = ap ? `${SET.n1} ${Math.round(IN.a1/ap*100)} % · ${SET.n2} ${Math.round(IN.a2/ap*100)} %` : 'aucun apport';
+  $('r-note').textContent = `Apport total ${eur(ap)} (${share}). Coût total = intérêts + assurance + frais banque. À emprunter = prix + notaire + frais banque − apports.`;
+  save();
+  if(current === 'amort') drawAmort();
+}
+
+/* ---------- amortissement ---------- */
+function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function drawAmort(){
+  const rows = R.rows;
+  $('t-amort').innerHTML = '<tr><th>Année</th><th>Capital</th><th>Intérêts</th><th>Assurance</th><th>Reste dû</th></tr>' +
+    rows.map(y => `<tr><td>${y.annee}</td><td>${eur(y.capital)}</td><td>${eur(y.interets)}</td><td>${eur(y.assurance)}</td><td>${eur(y.crd)}</td></tr>`).join('') +
+    `<tr><td><b>Total</b></td><td><b>${eur(R.C)}</b></td><td><b>${eur(R.I)}</b></td><td><b>${eur(R.A)}</b></td><td></td></tr>`;
+  const cv = $('chart'), dpr = window.devicePixelRatio || 1;
+  const w = cv.clientWidth, h = cv.clientHeight; if(!w) return;
+  cv.width = w*dpr; cv.height = h*dpr;
+  const ctx = cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
+  const max = Math.max(...rows.map(y => y.capital + y.interets + y.assurance)) || 1;
+  const padL = 44, padB = 20, cw = w - padL, ch = h - padB - 6;
+  ctx.font = '11px -apple-system,sans-serif'; ctx.fillStyle = cssVar('--tx3'); ctx.strokeStyle = cssVar('--line');
+  for(let i = 0; i <= 3; i++){
+    const v = max*i/3, y = 6 + ch - ch*i/3;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w, y); ctx.stroke();
+    ctx.textAlign = 'right'; ctx.fillText(nf0.format(Math.round(v/1000))+' k', padL-6, y+4);
+  }
+  const bw = cw / rows.length, gap = Math.min(4, bw*0.25);
+  const cols = [cssVar('--cap'), cssVar('--int'), cssVar('--ass')];
+  rows.forEach((y, i) => {
+    let base = 6 + ch; const x = padL + i*bw + gap/2;
+    [y.capital, y.interets, y.assurance].forEach((v, j) => {
+      const hh = ch * v / max; ctx.fillStyle = cols[j]; ctx.fillRect(x, base - hh, bw - gap, hh); base -= hh;
+    });
+    if(rows.length <= 12 || (i+1) % 5 === 0 || i === 0){ ctx.fillStyle = cssVar('--tx3'); ctx.textAlign = 'center'; ctx.fillText(y.annee, x + (bw-gap)/2, h - 5); }
+  });
+}
+
+/* ---------- propositions ---------- */
+function openSheet(){ $('p-name').value = 'Proposition ' + (PROPS.length + 1); $('sheet').classList.add('on'); setTimeout(()=>{ $('p-name').focus(); $('p-name').select(); }, 50); }
+function closeSheet(){ $('sheet').classList.remove('on'); }
+function saveProp(){
+  const name = $('p-name').value.trim() || ('Proposition ' + (PROPS.length + 1));
+  PROPS.push({id: Date.now(), name, date: new Date().toISOString(), in: {...IN}, set: {...SET}});
+  save(); closeSheet(); toast('Proposition enregistrée'); renderCmp();
+}
+
+const CMP_ROWS = [
+  {l:'Prix du bien',    f:(p,r)=>p.in.prix,   fmt:eur},
+  {l:'Apport total',    f:(p,r)=>p.in.a1+p.in.a2, fmt:eur},
+  {l:'À emprunter',     f:(p,r)=>r.C,         fmt:eur},
+  {l:'Taux nominal',    f:(p,r)=>p.in.taux,   fmt:pct, best:'min'},
+  {l:'Durée',           f:(p,r)=>p.in.duree,  fmt:v=>v+' ans'},
+  {l:'Assurance',       f:(p,r)=>p.in.assu,   fmt:pct, best:'min'},
+  {l:'Frais banque',    f:(p,r)=>p.in.frais,  fmt:eur, best:'min'},
+  {l:'Mensualité',      f:(p,r)=>r.M1,        fmt:eur, best:'min'},
+  {l:'Intérêts',        f:(p,r)=>r.I,         fmt:eur, best:'min'},
+  {l:'Assurance totale',f:(p,r)=>r.A,         fmt:eur, best:'min'},
+  {l:'Coût total',      f:(p,r)=>r.cout,      fmt:eur, best:'min'},
+];
+function cmpTable(clickable){
+  const res = PROPS.map(p => compute(p.in, {...DEF_SET, ...p.set}));
+  const d = iso => new Date(iso).toLocaleDateString('fr-FR');
+  let h = '<table class="cmp"><tr><th></th>' + PROPS.map((p,i) =>
+    `<th>${clickable ? `<span class="pname" data-load="${i}">${esc(p.name)}</span>` : esc(p.name)}<span class="pdate">${d(p.date)}</span></th>`).join('') + '</tr>';
+  CMP_ROWS.forEach(row => {
+    const vals = PROPS.map((p,i) => row.f(p, res[i]));
+    const bestV = row.best && PROPS.length > 1 ? Math.min(...vals) : null;
+    const allSame = vals.every(v => Math.abs(v - vals[0]) < 0.005);
+    h += `<tr><td>${row.l}</td>` + vals.map(v => `<td class="${bestV !== null && !allSame && Math.abs(v - bestV) < 0.005 ? 'best' : ''}">${row.fmt(v)}</td>`).join('') + '</tr>';
+  });
+  if(clickable) h += '<tr><td></td>' + PROPS.map((p,i) => `<td><button class="small danger" data-del="${i}" aria-label="Supprimer ${esc(p.name)}">Supprimer</button></td>`).join('') + '</tr>';
+  return h + '</table>';
+}
+function renderCmp(){
+  const box = $('cmp-box');
+  if(!PROPS.length){
+    box.innerHTML = '<div class="card empty">Aucune proposition enregistrée.<br>Dans Calcul, règle les valeurs puis touche « Enregistrer cette proposition ».</div>';
+    return;
+  }
+  box.innerHTML = `<div class="card"><div class="scroll">${cmpTable(true)}</div>
+    <div class="note">En vert : la meilleure valeur de la ligne. Touche le nom d'une proposition pour la recharger dans Calcul.</div></div>
+    <button class="main" id="btn-pdf">Créer le PDF</button>`;
+  box.querySelectorAll('[data-load]').forEach(el => el.addEventListener('click', () => {
+    const p = PROPS[+el.dataset.load]; IN = {...DEF_IN, ...p.in}; syncFields(); refresh(); go('calc'); toast('« ' + p.name + ' » rechargée');
+  }));
+  box.querySelectorAll('[data-del]').forEach(el => el.addEventListener('click', () => {
+    const p = PROPS[+el.dataset.del];
+    if(confirm('Supprimer « ' + p.name + ' » ?')){ PROPS.splice(+el.dataset.del, 1); save(); renderCmp(); }
+  }));
+  $('btn-pdf').addEventListener('click', printPdf);
+}
+
+/* ---------- PDF ---------- */
+function printPdf(){
+  const res = PROPS.map(p => compute(p.in, {...DEF_SET, ...p.set}));
+  let h = `<h1>Comparatif crédit immobilier</h1><div>${esc(SET.n1)} et ${esc(SET.n2)} · ${new Date().toLocaleDateString('fr-FR')}</div>`;
+  h += '<h2>Comparaison</h2>' + cmpTable(false);
+  PROPS.forEach((p, i) => {
+    const r = res[i], s = {...DEF_SET, ...p.set};
+    h += `<div class="pdet"><h2>${esc(p.name)}</h2><table>
+      <tr><td>Prix du bien</td><td>${eur(p.in.prix)}</td><td>Frais de notaire</td><td>${eur(r.notaire)}</td></tr>
+      <tr><td>Apport ${esc(s.n1)}</td><td>${eur(p.in.a1)}</td><td>Apport ${esc(s.n2)}</td><td>${eur(p.in.a2)}</td></tr>
+      <tr><td>Montant emprunté</td><td>${eur(r.C)}</td><td>Durée</td><td>${p.in.duree} ans (${r.n} mois)</td></tr>
+      <tr><td>Taux nominal</td><td>${pct(p.in.taux)}</td><td>Assurance</td><td>${pct(p.in.assu)} ${s.amode === 'crd' ? '(capital restant dû)' : '(capital initial)'}</td></tr>
+      <tr><td>Mensualité hors assurance</td><td>${eur(r.m)}</td><td>Mensualité avec assurance</td><td>${eur(r.M1)}</td></tr>
+      <tr><td>Intérêts</td><td>${eur(r.I)}</td><td>Assurance totale</td><td>${eur(r.A)}</td></tr>
+      <tr><td>Frais banque</td><td>${eur(p.in.frais)}</td><td><b>Coût total du crédit</b></td><td><b>${eur(r.cout)}</b></td></tr>
+    </table></div>`;
+  });
+  h += '<div style="font-size:9pt;color:#555;margin-top:14pt">Simulation indicative, hors frais non saisis. Seule l\'offre de prêt de la banque fait foi.</div>';
+  $('print').innerHTML = h;
+  window.print();
+}
+
+/* ---------- réglages ---------- */
+function syncSettings(){
+  $('s-n1').value = SET.n1; $('s-n2').value = SET.n2;
+  $('s-part').value = nf0.format(SET.part1); $('s-not1').value = nf2.format(SET.not1); $('s-not2').value = nf2.format(SET.not2);
+  $('s-amode').value = SET.amode;
+  $('l-not1').textContent = 'Taux ' + SET.n1 + ' (%)'; $('l-not2').textContent = 'Taux ' + SET.n2 + ' (%)';
+  $('l-part').firstChild.textContent = 'Part du bien de ' + SET.n1 + ' (%)';
+}
+function bindSettings(){
+  [['s-n1','n1',false],['s-n2','n2',false],['s-part','part1',true],['s-not1','not1',true],['s-not2','not2',true]].forEach(([id,k,num]) => {
+    $(id).addEventListener('change', () => {
+      if(num){ const v = parse($(id).value); if(v !== null && v >= 0) SET[k] = k === 'part1' ? Math.min(100, v) : v; }
+      else { const v = $(id).value.trim(); if(v) SET[k] = v; }
+      syncSettings(); syncFields(); refresh();
+    });
+  });
+  $('s-amode').addEventListener('change', () => { SET.amode = $('s-amode').value; refresh(); });
+  $('btn-exp').addEventListener('click', exportData);
+  $('btn-imp').addEventListener('click', () => $('f-imp').click());
+  $('f-imp').addEventListener('change', importData);
+  $('btn-reset').addEventListener('click', () => {
+    if(confirm('Effacer toutes les propositions et remettre les valeurs par défaut ?')){
+      IN = {...DEF_IN}; SET = {...DEF_SET}; PROPS = []; save(); syncSettings(); syncFields(); refresh(); renderCmp(); toast('Tout est effacé');
+    }
+  });
+}
+async function exportData(){
+  const name = 'credit-immo-' + new Date().toISOString().slice(0,10) + '.json';
+  const blob = new Blob([JSON.stringify({app:'credit-immo', v:1, in:IN, set:SET, props:PROPS}, null, 2)], {type:'application/json'});
+  try{
+    const file = new File([blob], name, {type:'application/json'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:name}); return; }
+  }catch(e){ if(e && e.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+function importData(e){
+  const f = e.target.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try{
+      const d = JSON.parse(rd.result);
+      if(d.app !== 'credit-immo') throw 0;
+      IN = {...DEF_IN, ...d.in}; SET = {...DEF_SET, ...d.set}; PROPS = Array.isArray(d.props) ? d.props : [];
+      save(); syncSettings(); syncFields(); refresh(); renderCmp(); toast('Sauvegarde importée');
+    }catch(err){ toast('Fichier non reconnu'); }
+    e.target.value = '';
+  };
+  rd.readAsText(f);
+}
+
+/* ---------- navigation ---------- */
+let current = 'calc';
+function go(v){
+  current = v;
+  document.querySelectorAll('.view').forEach(s => s.classList.toggle('on', s.id === 'v-' + v));
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  window.scrollTo(0, 0);
+  if(v === 'amort') drawAmort();
+  if(v === 'cmp') renderCmp();
+}
+let tt; function toast(msg){ const t = $('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(tt); tt = setTimeout(()=>t.classList.remove('on'), 1800); }
+
+/* ---------- démarrage ---------- */
+load(); buildFields(); syncFields(); syncSettings(); bindSettings(); refresh(); renderCmp();
+document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => go(b.dataset.v)));
+$('btn-save').addEventListener('click', openSheet);
+$('p-cancel').addEventListener('click', closeSheet);
+$('p-ok').addEventListener('click', saveProp);
+$('p-name').addEventListener('keydown', e => { if(e.key === 'Enter') saveProp(); });
+$('sheet').addEventListener('click', e => { if(e.target.id === 'sheet') closeSheet(); });
+window.addEventListener('resize', () => { if(current === 'amort') drawAmort(); });
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if(current === 'amort') drawAmort(); });
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
