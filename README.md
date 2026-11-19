@@ -1,5 +1,7 @@
 # Calculatrice crédit
 
+https://heikefr.github.io/calculatrice-credit/
+
 Calculette de crédit immobilier hors ligne pour iPhone (PWA).
 
 - Ouvrir le site dans Safari, puis Partager → « Sur l'écran d'accueil ».
